@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Battle Quest</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .game-container {
+            max-width: 600px;
+            margin: auto;
+            background: linear-gradient(135deg, #2c2c2c, #3e3e3e);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+        }
+        .enemy {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .challenge {
+            font-size: 22px;
+            margin: 20px 0;
+        }
+        input {
+            padding: 12px;
+            font-size: 18px;
+            width: 90%;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+        }
+        .btn {
+            padding: 12px 25px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            background-color: #ff4500;
+            border-radius: 8px;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #e63b00;
+        }
+        .status {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        /* Animation */
+        @keyframes pulseEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .win-message {
+            font-size: 30px;
+            color: #28a745;
+            animation: pulseEffect 2s infinite;
+        }
+    </style>
+</head>
+<body>
+
+<h1>⚔️ Grammar Battle Quest: Defeat the Monsters! 🛡️</h1>
+
+<div class="game-container">
+    <p><strong>Leaderboard:</strong> <span id="score">0</span> Points</p>
+</div>
+
+<div class="game-container">
+    <p class="enemy">👾 GRAMMAR MONSTER ATTACKS!</p>
+    <input type="text" id="answer" placeholder="Enter 1 or 2..." onkeypress="handleKeyPress(event)">
+    <p class="challenge" id="challengeText"></p>
+    <button class="btn" onclick="checkAnswer()">ATTACK!</button>
+    <button class="btn" onclick="getHint()">Hint</button>
+    <p class="status" id="statusMessage"></p>
+    <p><strong>Time Left:</strong> <span id="timer">30</span> seconds</p>
+</div>
+
+<script>
+    let challenges = [
+        { question: "Which sentence is correct? 1. 'Each of the students were late.' OR 2. 'Each of the students was late.'", answer: "2", hint: "'Each' is singular!" },
+        { question: "Choose the right sentence: 1. 'Between you and I, this is secret.' OR 2. 'Between you and me, this is secret.'", answer: "2", hint: "'Between' needs an object pronoun!" },
+        { question: "Identify the sentence type: 1. 'The castle was built by the king.' OR 2. 'The king built the castle.'", answer: "1", hint: "Look for 'was'!" },
+        { question: "Which sentence is correct? 1. 'There is many reasons to be happy.' OR 2. 'There are many reasons to be happy.'", answer: "2", hint: "'Reasons' is plural!" },
+        { question: "Passive or Active? 1. 'The ball was kicked by Sam.' OR 2. 'Sam kicked the ball.'", answer: "1", hint: "Does it contain 'was'?" },
+        { question: "Pick the correct sentence: 1. 'He don’t like chocolate.' OR 2. 'He doesn’t like chocolate.'", answer: "2", hint: "'He' needs 'does'!" }
+    ];
+
+    let currentChallenge = 0;
+    let score = 0;
+    let timeLeft = 30;
+    let timer;
+
+    function startGame() {
+        document.getElementById("challengeText").innerText = challenges[currentChallenge].question;
+        resetTimer();
+    }
+
+    function checkAnswer() {
+        let userInput = document.getElementById("answer").value.trim();
+        let correctAnswer = challenges[currentChallenge].answer;
+
+        if (userInput === correctAnswer) {
+            document.getElementById("statusMessage").innerText = "✅ Correct! You defeated the monster!";
+            document.querySelector(".enemy").innerText = "💥 MONSTER GLITCHED!";
+            score += 10;
+            document.getElementById("score").innerText = score;
+        } else {
+            document.getElementById("statusMessage").innerText = "❌ Wrong answer! The monster grows stronger!";
+        }
+
+        setTimeout(nextChallenge, 2000);
+    }
+
+    function nextChallenge() {
+        currentChallenge++;
+        resetTimer();
+        if (currentChallenge < challenges.length) {
+            document.querySelector(".enemy").innerText = "⚔️ NEW MONSTER APPEARS!";
+            document.getElementById("challengeText").innerText = challenges[currentChallenge].question;
+            document.getElementById("statusMessage").innerText = "";
+            document.getElementById("answer").value = "";
+        } else {
+            document.querySelector(".game-container").innerHTML = "<p class='win-message'>🏆 YOU WON THE GRAMMAR QUEST! 🎉</p>";
+        }
+    }
+
+    function getHint() {
+        document.getElementById("statusMessage").innerText = "💡 Hint: " + challenges[currentChallenge].hint;
+    }
+
+    function resetTimer() {
+        clearInterval(timer);
+        timeLeft = 30;
+        document.getElementById("timer").innerText = timeLeft;
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById("timer").innerText = timeLeft;
+            if (timeLeft === 0) {
+                clearInterval(timer);
+                nextChallenge();
+            }
+        }, 1000);
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            checkAnswer();
+        }
+    }
+
+    window.onload = startGame;
+</script>
+
+</body>
+</html>
